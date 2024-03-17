@@ -51,7 +51,7 @@
           - docker-compose-plugin
     - name: Definir usuário no grupo docker
       ansible.builtin.user:
-        name: fabricioveronez
+        name: gliveroson
         shell: /bin/bash
         groups: docker
         append: yes
@@ -93,7 +93,7 @@
     ansible.builtin.apt:
       name: kubectl
       state: present
-			update_cache: yes
+		  update_cache: yes
 
 
 - name: Instalação do KIND
