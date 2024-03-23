@@ -1,0 +1,36 @@
+---
+- name: Configurar chaves SSH e Alterar senha do usuário root
+  hosts: vps
+  remote_user: ubuntu
+  become: yes
+  vars_prompt:
+    - name: nova_senha_root
+      prompt: "Digite a nova senha para o usuário root:"
+      private: yes
+  tasks:
+    - name: Alterar senha do usuário root
+      become_user: root
+      shell: "echo 'root:{{ nova_senha_root }}' | chpasswd"
+
+    - name: Reiniciar o serviço SSH após alterar a senha do root
+      become_user: root
+      service:
+        name: sshd
+        state: restarted
+
+    - name: Copiar script para as VPS
+      become_user: root
+      copy:
+        src: /root/ansible-scripts/instala_resetV2.sh
+        dest: /root
+        mode: "777"
+
+    - name: Executar script instala_resetV2.sh
+      become_user: root
+      shell: "/root/instala_resetV2.sh"
+      register: script_output
+      ignore_errors: yes
+
+    - name: Exibir saída do script
+      debug:
+        var: script_output.stdout_lines
